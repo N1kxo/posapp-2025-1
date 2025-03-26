@@ -6,7 +6,7 @@ import { auth } from "@/utils/FirebaseConfig";
 interface AuthContextProps {
     user: User | null;
     login: (email: string, password: string) => void;
-    register: (email: string, password: string) => Promise<User | null>;
+    register: (user: User) => Promise<User | null>;
     updateUser: (user: User) => void;
     updateRole: (role: "client" | "chef" | "cashier") => void;
     logout: () => void;
@@ -27,9 +27,9 @@ export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
     }, []);
 
 
-    const login = async (email: string, password: string) => {
+    const login = async (user: any) => {
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const userCredential = await signInWithEmailAndPassword(auth, user.email, user.password);
             console.log("✅ Usuario autenticado:", userCredential.user);
             setUser(userCredential.user);
             return userCredential.user;
@@ -39,9 +39,10 @@ export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
         }
     }
 
-    const register = async (email: string, password: string) => {
+    const register = async (user: any) => {
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, user.email, user.password);
+            const firebaseUser = userCredential.user;
             console.log("✅ Usuario registrado:", userCredential.user);
             setUser(userCredential.user);
             return userCredential.user;
@@ -53,7 +54,7 @@ export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
     }
 
     const updateUser = (user: User) => {
-        
+
     }
 
     const updateRole = (role: "client" | "chef" | "cashier") => {
