@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
     }
 
     const updateRole = (role: "client" | "chef" | "cashier") => {
+            
     }
 
     const logout = async () => {
