@@ -1,14 +1,16 @@
-import { User } from "@firebase/auth";
+import { User } from "firebase/auth";
 import { createContext, useState, useEffect } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { auth } from "@/utils/FirebaseConfig";
+import { auth, db } from "@/utils/FirebaseConfig";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { router } from "expo-router";
 
 interface AuthContextProps {
     user: User | null;
-    login: (email: string, password: string) => void;
-    register: (user: User) => Promise<User | null>;
+    login: (email: string, password: string) =>  Promise<boolean>;
+    register: (email: string, password: string,  role?: "client" | "chef" | "cashier") => Promise<User | null>;
     updateUser: (user: User) => void;
-    updateRole: (role: "client" | "chef" | "cashier") => void;
+    updateRole: (role: "client" | "chef" | "cashier", user: User) => Promise<boolean>;
     logout: () => void;
 }
 
@@ -27,37 +29,93 @@ export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
     }, []);
 
 
-    const login = async (user: any) => {
+    const login = async (email: string, password: string): Promise<boolean> => { 
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, user.email, user.password);
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
             console.log("✅ Usuario autenticado:", userCredential.user);
             setUser(userCredential.user);
-            return userCredential.user;
+
+            const userRef = doc(db, "users", userCredential.user.uid);
+            const userSnapshot = await getDoc(userRef);
+
+            
+            if (userSnapshot.exists()) {
+                const userData = userSnapshot.data();
+                const role = userData.role; // Get the role from Firestore
+    
+                if (role === "client") {
+                    router.push("/(app)/menu");
+                } else if (role === "cashier") {
+                    router.push("/(app)/cashier");
+                } else if (role === "chef") {
+                    router.push("/(app)/kitchen"); // Example route for a chef
+                }
+            } else {
+                console.warn("⚠️ User document not found in Firestore.");
+            }
+    
+
+            return true; 
         } catch (error) {
             console.error("🔥 Error al autenticar usuario:", error);
-            return null;
+            return false;
         }
-    }
+    };
 
-    const register = async (user: any) => {
+    const register = async (
+        email: string,
+        password: string,
+        role: "client" | "chef" | "cashier" = "client"
+    ) => { 
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, user.email, user.password);
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const firebaseUser = userCredential.user;
-            console.log("✅ Usuario registrado:", userCredential.user);
-            setUser(userCredential.user);
-            return userCredential.user;
+            console.log("✅ Usuario registrado:", firebaseUser);
+            
+            setUser(firebaseUser);
+    
+            // Ensure Firestore document has the correct structure
+            await setDoc(doc(db, "users", firebaseUser.uid), {
+                id: firebaseUser.uid,          
+                email,
+                role,
+                createdAt: new Date()
+            });
+    
+            return firebaseUser;
         } catch (error) {
             console.error("🔥 Error al registrar usuario:", error);
             return null;
         }
+    };
 
-    }
 
     const updateUser = (user: User) => {
 
+
+
+
+
+
     }
 
-    const updateRole = (role: "client" | "chef" | "cashier") => {
+    const updateRole = async (role: "client" | "chef" | "cashier", user: User): Promise<boolean> => {
+
+        if (!user) {
+            console.error(" No user found, cannot update role.");
+            return false;
+        }
+
+        try {
+            const userRef = doc(db, "users", user.uid);
+            await updateDoc(userRef, { role });
+    
+            console.log(` Role updated to ${role} for user ${user.uid}`);
+            return true;
+        } catch (error) {
+            console.error(" Error updating user role:", error);
+            return false;
+        }
             
     }
 
@@ -73,17 +131,8 @@ export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
 
 
     return (
-        <AuthContext.Provider 
-        value={{
-            user,
-            login,
-            register,
-            updateUser,
-            updateRole,
-            logout
-
-        }}>
-        {children}
+        <AuthContext.Provider value={{ user, login, register, updateUser, updateRole, logout }}>
+            {children}
         </AuthContext.Provider>
     );
-    }
+    }   

@@ -12,9 +12,11 @@ export default function RegisterScreen() {
         return <Text style={styles.errorText}>Error: AuthContext no está disponible</Text>;
     }
 
-    const { register } = auth;
+    const { register, login } = auth;
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [role, setRole] = useState<"client" | "chef" | "cashier">("client");
     const [loading, setLoading] = useState(false);
 
     const handleRegister = async () => {
@@ -24,13 +26,23 @@ export default function RegisterScreen() {
         }
 
         setLoading(true);
-        const user = await register(email, password);
-        setLoading(false);
+        const user = await register(email, password, role);
 
-        if (user) {
-            Alert.alert("Éxito", "Usuario registrado con éxito");
+    };
+    const handleLogin = async () => {
+        if (!email || !password) {
+            Alert.alert("Error", "Por favor completa todos los campos.");
+            return;
+        }
+    
+        setLoading(true);
+        const success = await login(email, password); // Ahora devuelve true o false
+        setLoading(false);
+    
+        if (success) {
+            Alert.alert("Éxito", "Inicio de sesión exitoso.");
         } else {
-            Alert.alert("Error", "No se pudo registrar el usuario");
+            Alert.alert("Error", "Credenciales incorrectas o problema en la autenticación.");
         }
     };
 
@@ -64,6 +76,16 @@ export default function RegisterScreen() {
             >
                 <Text style={styles.buttonText}>
                     {loading ? "Registrando..." : "Registrarse"}
+                </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+                onPress={handleLogin} 
+                style={styles.button} 
+                disabled={loading}
+            >
+                <Text style={styles.buttonText}>
+                    {loading ? "logeando..." : "Log In"}
                 </Text>
             </TouchableOpacity>
         </View>
