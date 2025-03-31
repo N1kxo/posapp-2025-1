@@ -2,15 +2,16 @@ import { User } from "firebase/auth";
 import { createContext, useState, useEffect } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth, db } from "@/utils/FirebaseConfig";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { router } from "expo-router";
+
 
 interface AuthContextProps {
     user: User | null;
     login: (email: string, password: string) =>  Promise<boolean>;
     register: (email: string, password: string,  role?: "client" | "chef" | "cashier") => Promise<User | null>;
     updateUser: (user: User) => void;
-    updateRole: (role: "client" | "chef" | "cashier", user: User) => Promise<boolean>;
+    updateRole: (role: "client" | "chef" | "cashier", email: string) => Promise<boolean>;
     logout: () => void;
 }
 
@@ -81,6 +82,7 @@ export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
                 role,
                 createdAt: new Date()
             });
+            router.push("/(app)/menu");
     
             return firebaseUser;
         } catch (error) {
@@ -99,25 +101,44 @@ export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
 
     }
 
-    const updateRole = async (role: "client" | "chef" | "cashier", user: User): Promise<boolean> => {
-
-        if (!user) {
-            console.error(" No user found, cannot update role.");
-            return false;
-        }
-
+    const getUserIdByEmail = async (email: string): Promise<string | null> => {
         try {
-            const userRef = doc(db, "users", user.uid);
+            const usersRef = collection(db, "users");
+            const q = query(usersRef, where("email", "==", email));
+            const querySnapshot = await getDocs(q);
+    
+            if (!querySnapshot.empty) {
+                const userDoc = querySnapshot.docs[0]; // Tomar el primer resultado
+                return userDoc.id; // ID del documento (que debería ser el UID del usuario)
+            } else {
+                console.warn("❌ No user found with email:", email);
+                return null;
+            }
+        } catch (error) {
+            console.error("🔥 Error fetching user ID:", error);
+            return null;
+        }
+    };
+
+    const updateRole = async (role: "client" | "chef" | "cashier", email: string): Promise<boolean> => {
+        try {
+            const userUID = await getUserIdByEmail(email); // 🔹 Usa await aquí
+    
+            if (!userUID) {
+                console.error(" No user found, cannot update role.");
+                return false;
+            }
+    
+            const userRef = doc(db, "users", userUID);
             await updateDoc(userRef, { role });
     
-            console.log(` Role updated to ${role} for user ${user.uid}`);
+            console.log(`✅ Role updated to ${role} for user ${userUID}`);
             return true;
         } catch (error) {
-            console.error(" Error updating user role:", error);
+            console.error("🔥 Error updating user role:", error);
             return false;
         }
-            
-    }
+    };
 
     const logout = async () => {
         try {

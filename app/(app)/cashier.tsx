@@ -21,7 +21,8 @@ export default function RoleSelectionForm() {
         }
 
         setLoading(true);
-        const success = await auth.updateRole(role, auth.user);
+
+        const success = await auth.updateRole(role, email);
         setLoading(false);
 
         if (success) {
