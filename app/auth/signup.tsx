@@ -16,7 +16,7 @@ export default function RegisterScreen() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [role, setRole] = useState<"client" | "chef" | "cashier">("client");
+    const [role, setRole] = useState<"client" | "chef" | "cashier" | "admin">("client");
     const [loading, setLoading] = useState(false);
 
     const handleRegister = async () => {
