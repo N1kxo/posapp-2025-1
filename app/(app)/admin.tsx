@@ -46,6 +46,7 @@ export default function RoleSelectionForm() {
             />
             
             <Text>Selecciona un rol:</Text>
+            
             <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10 }}>
                 {["client", "chef", "cashier"].map((item) => (
                     <Button key={item} title={item} onPress={() => setRole(item as 'client' | 'chef' | 'cashier')} />
