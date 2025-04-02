@@ -39,4 +39,18 @@ export const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: 20,
     },
+    controls: {
+
+    },
+    camera: {
+
+    },
+    buttonMenu: {
+
+    },
+    previewImage: {
+        
+    }
+
+
 });
