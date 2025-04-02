@@ -47,9 +47,7 @@ export default function index() {
             <CameraModal
                 isVisible={isVisible}
                 image={image} 
-                onClose={function (): void {
-                    throw new Error('Function not implemented.');
-                } }            />
+                onClose={() => setIsVisible(false)}            />
         </View>
     )
 }
