@@ -53,7 +53,7 @@ export default function CameraModal(props: CameraModalProps) {
 
     if (!permission.granted) {
         return (
-            <View style={styles.permissionContainer}>
+            <View>
                 <Text>We need your permission to show the camera</Text>
             </View>
         );
