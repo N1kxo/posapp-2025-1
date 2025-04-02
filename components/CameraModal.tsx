@@ -1,9 +1,8 @@
-import { View, Text, Modal, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import React, { useRef, useState } from 'react';
+import { View, Text, Modal, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { styles } from "../assets/styles/styles";
-
 
 interface CameraModalProps {
     isVisible: boolean;
@@ -16,6 +15,10 @@ export default function CameraModal(props: CameraModalProps) {
     const [permission, requestPermission] = useCameraPermissions();
     const cameraRef = useRef<CameraView>(null);
     const [capturedImage, setCapturedImage] = useState<string | null>(null);
+
+    useEffect(() => {
+        requestPermission();
+    }, []);
 
     const flip = async () => {
         setFacing(facing === 'back' ? 'front' : 'back');
@@ -35,7 +38,7 @@ export default function CameraModal(props: CameraModalProps) {
 
     const open = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images','videos'],
+            mediaTypes: ['images', 'videos'],
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
@@ -66,11 +69,20 @@ export default function CameraModal(props: CameraModalProps) {
                     <Image source={{ uri: capturedImage }} style={styles.previewImage} />
                 ) : (
                     <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+                        {/* Controles en la parte superior */}
                         <View style={styles.controls}>
-                            <TouchableOpacity onPress={take} style={styles.buttonMenu}><Text>Take a photo</Text></TouchableOpacity>
-                            <TouchableOpacity onPress={open} style={styles.buttonMenu}><Text>Open Library</Text></TouchableOpacity>
-                            <TouchableOpacity onPress={flip} style={styles.buttonMenu}><Text>Flip Camera</Text></TouchableOpacity>
-                            <TouchableOpacity onPress={props.onClose} style={styles.buttonMenu}><Text>Close</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={take} style={styles.buttonMenu}>
+                                <Text style={styles.controlsText}>📷 Tomar Foto</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={open} style={styles.buttonMenu}>
+                                <Text style={styles.controlsText}>📂 Galería</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={flip} style={styles.buttonMenu}>
+                                <Text style={styles.controlsText}>🔄 Voltear</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={props.onClose} style={styles.buttonMenu}>
+                                <Text style={styles.controlsText}>❌ Cerrar</Text>
+                            </TouchableOpacity>
                         </View>
                     </CameraView>
                 )}
