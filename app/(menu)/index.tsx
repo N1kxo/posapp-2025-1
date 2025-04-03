@@ -12,10 +12,7 @@ export default function index() {
     return (
 
         <View
-            style={{
-                flex: 1,
-                padding: 20
-            }}
+            style={{flex: 1, padding: 20,justifyContent: "center", alignContent: "center", alignItems: "center"}}
         >
             {/* Select Image */}
             {
@@ -23,10 +20,10 @@ export default function index() {
                     {/* Pintar la imagen */}
                 </View>
                     :
-                    <TouchableOpacity
+                    <TouchableOpacity 
                         onPress={() => setIsVisible(true)}
                     >
-                        <Entypo name="camera" size={24} color="black" />
+                        <Entypo name="camera" size={32} color="black" />
                     </TouchableOpacity>
             }
 
