@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { collection, addDoc, updateDoc, deleteDoc, getDocs, doc } from "firebase/firestore";
+import { collection, addDoc, updateDoc, deleteDoc, getDocs, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../utils/FirebaseConfig";
-import { MenuItem } from "../../interfaces/common"; // 🔹 Importar la interfaz
+import { MenuItem } from "../../interfaces/common";
 
 interface MenuContextType {
   menu: MenuItem[];
@@ -10,39 +10,50 @@ interface MenuContextType {
   deleteMenuItem: (id: string) => Promise<void>;
 }
 
-const MenuContext = createContext<MenuContextType | undefined>(undefined);
+export const MenuContext = createContext<MenuContextType | undefined>(undefined);
 
 export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
   const [menu, setMenu] = useState<MenuItem[]>([]);
 
-  useEffect(() => {
-    const fetchMenu = async () => {
-      const querySnapshot = await getDocs(collection(db, "menu"));
-      const menuData = querySnapshot.docs.map((docSnap) => ({
-        id: docSnap.id, // 🔹 Aseguramos que Firestore asigne el id al objeto
+  useEffect(() => { 
+    const unsubscribe = onSnapshot(collection(db, "menu"), (snapshot) => {
+      const menuData = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
         ...docSnap.data(),
       })) as MenuItem[];
 
       setMenu(menuData);
-    };
+    });
 
-    fetchMenu();
+    return () => unsubscribe();
   }, []);
 
   const addMenuItem = async (item: Omit<MenuItem, "id">) => {
-    const docRef = await addDoc(collection(db, "menu"), item);
-    setMenu((prev) => [...prev, { id: docRef.id, ...item }]);
+    try {
+      const docRef = await addDoc(collection(db, "menu"), item);
+      setMenu((prev) => [...prev, { id: docRef.id, ...item }]);
+    } catch (error) {
+      console.error("Error al agregar el producto:", error);
+    }
   };
 
   const updateMenuItem = async (id: string, item: Partial<MenuItem>) => {
-    const itemRef = doc(db, "menu", id);
-    await updateDoc(itemRef, item);
-    setMenu((prev) => prev.map((m) => (m.id === id ? { ...m, ...item } : m)));
+    try {
+      const itemRef = doc(db, "menu", id);
+      await updateDoc(itemRef, item);
+      setMenu((prev) => prev.map((m) => (m.id === id ? { ...m, ...item } : m)));
+    } catch (error) {
+      console.error("Error al actualizar el producto:", error);
+    }
   };
 
   const deleteMenuItem = async (id: string) => {
-    await deleteDoc(doc(db, "menu", id));
-    setMenu((prev) => prev.filter((m) => m.id !== id));
+    try {
+      await deleteDoc(doc(db, "menu", id));
+      setMenu((prev) => prev.filter((m) => m.id !== id));
+    } catch (error) {
+      console.error("Error al eliminar el producto:", error);
+    }
   };
 
   return (
