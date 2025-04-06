@@ -13,6 +13,7 @@ export default function Index() {
     const [isVisible, setIsVisible] = useState(false);
 
     return (
+
         <View style={styles.containerAddMenu}>
             {image ? (
              <View style={styles.imageContainer}>

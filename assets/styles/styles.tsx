@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
         marginTop: 15,
         alignSelf: "center",
     },
-    containerAddMenu:{
+containerAddMenu:{
 
         flex: 1,
         justifyContent: "center",
@@ -162,5 +162,42 @@ export const styles = StyleSheet.create({
         
       } ,
     
+
+
+    item: {
+        backgroundColor: "rgb(135, 160, 178)", // Azul grisáceo
+        padding: 15,
+        borderRadius: 8,
+        marginBottom: 10,
+    },
+    buttons: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 10,
+    },
+    addButton: {
+        backgroundColor: "rgb(86, 71, 135)", // Azul oscuro
+        padding: 12,
+        borderRadius: 8,
+        alignItems: "center",
+    },
+    updateButton: {
+        backgroundColor: "rgb(134, 19, 136)", // Dark Magenta
+        padding: 12,
+        borderRadius: 8,
+        alignItems: "center",
+    },
+    deleteButton: {
+        backgroundColor: "rgb(255, 0, 0)", // Rojo para eliminar
+        padding: 12,
+        borderRadius: 8,
+        alignItems: "center",
+    },
+    editButton: {
+        backgroundColor: "rgb(86, 71, 135)", // Azul oscuro
+        padding: 12,
+        borderRadius: 8,
+        alignItems: "center",
+    },
 
 });
