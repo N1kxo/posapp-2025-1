@@ -83,6 +83,87 @@ export const styles = StyleSheet.create({
         marginTop: 15,
         alignSelf: "center",
     },
+containerAddMenu:{
+
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+        width: "100%",
+        backgroundColor: "rgb(164, 190, 243)",
+        gap: 50,
+
+    },
+
+    photo: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        borderColor:"rgb(134, 19, 136)",
+        overflow: 'hidden',
+        
+    },
+    
+    imageContainer: {
+        width: '50%', // o un valor fijo como 300
+        aspectRatio: 4 / 4, // ajusta según la forma que quieras
+        borderRadius: 10,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor:"rgb(134, 19, 136)",
+        backgroundColor: '#ccc',
+        justifyContent: 'center',
+        alignItems: 'center',
+        // solo mientras no hay imagen
+    },
+    
+    cameraButton: {
+        position: 'absolute',
+        bottom: 10,
+        right: 10,
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        borderRadius: 30,
+        padding: 5, 
+        paddingHorizontal: 10,
+        fontSize: 16,
+      },
+      priceInput: {
+        width: "50%",
+        borderWidth: 1,
+        borderColor:"rgb(134, 19, 136)",
+        backgroundColor: "#ccc",
+        paddingVertical: 8,
+        paddingHorizontal: 10,
+        fontSize: 16,
+        
+      },
+      descriptionInput: {
+        width: "50%",
+        borderWidth: 1,
+        borderColor:"rgb(134, 19, 136)",
+        padding: 10,
+        fontSize: 16,
+        textAlignVertical: 'top',
+        backgroundColor: "#ccc",
+      },
+      titleInput:{
+
+        width: "50%",
+        borderWidth: 1,
+        borderColor:"rgb(134, 19, 136)",
+        paddingVertical: 8,
+        paddingHorizontal: 10,
+        fontSize: 16,
+        backgroundColor: "#ccc",
+     
+        
+      } ,
+    
+
+
     item: {
         backgroundColor: "rgb(135, 160, 178)", // Azul grisáceo
         padding: 15,
@@ -118,4 +199,5 @@ export const styles = StyleSheet.create({
         borderRadius: 8,
         alignItems: "center",
     },
+
 });
