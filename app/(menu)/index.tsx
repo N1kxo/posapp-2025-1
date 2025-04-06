@@ -1,85 +1,104 @@
-import { View, Text, TouchableOpacity, ImageBackground } from 'react-native'
-import React, { useState } from 'react'
-import { TextInput } from 'react-native'
-import Entypo from '@expo/vector-icons/Entypo';
-import CameraModal from '@/components/CameraModal';
-import { styles } from '@/assets/styles/styles';
 
-export default function Index() {
-    const [image, setImage] = useState(undefined as string | undefined);
-    const [title, setTitle] = useState('');
-    const [price, setPrice] = useState('');
-    const [description, setDescription] = useState('');
-    const [isVisible, setIsVisible] = useState(false);
+import React, { useState } from "react";
+import { View, Text, FlatList, TouchableOpacity, TextInput, StyleSheet } from "react-native";
+import { useContext } from "react";
+import { MenuContext } from "../../context/menuContext/MenuContext";
+import { MenuItem } from "../../interfaces/common"; // Asegúrate de importar la interfaz correcta
+import { styles } from "@/assets/styles/styles";
+import { router } from "expo-router";
 
-    return (
+export default function MenuScreen() {
+  const menuContext = useContext(MenuContext);
 
-        <View style={styles.containerAddMenu}>
-            {image ? (
-             <View style={styles.imageContainer}>
-             <ImageBackground
-                 source={{ uri: image }}
-                 style={styles.photo}
-                 resizeMode="cover"
-             >
-                 <TouchableOpacity onPress={() => setIsVisible(true)} style={styles.cameraButton}>
-                     <Entypo name="camera" size={30} color="black" />
-                 </TouchableOpacity>
-             </ImageBackground>
-         </View>
-            ) : (
-                <View>
-                    <TouchableOpacity onPress={() => setIsVisible(true)} style = {styles.imageContainer}>
-                        <Entypo name="camera" size={30} color="black" />
-                    </TouchableOpacity>
-                </View>
-            )}
+  if (!menuContext) {
+    return <Text>Error: MenuContext no está disponible</Text>;
+  } 
 
-            {/* Title */}
-            <TextInput
-                placeholder="Enter title"
-                value={title}
-                onChangeText={setTitle}
-                style={styles.titleInput}
-            />
-
-            {/* Price */}
-            <TextInput
-                placeholder="Enter price"
-                value={price}
-                onChangeText={setPrice}
-                keyboardType="numeric"
-                style={styles.priceInput}
-            />
-
-            {/* Description */}
-            <TextInput
-                placeholder="Enter description"
-                value={description}
-                onChangeText={setDescription}
-                multiline
-                numberOfLines={3}
-                style={styles.descriptionInput}
-            />
-
-            {/* Only one CameraModal here */}
-            <CameraModal
-                isVisible={isVisible}
-                onClose={() => setIsVisible(false)}
-                onCapture={(uri) => {
-                    setImage(uri); // <- Aquí guardas la imagen
-                    setIsVisible(false);
-                }}
-            />
-
-                                       <TouchableOpacity
-                                            onPress={void}
-                                            style={styles.button}
-                                        >
-                                            <Text style={styles.controlsText}>Submit</Text>
-                                        </TouchableOpacity> 
+  const { menu,  updateMenuItem, deleteMenuItem } = menuContext;
 
 
-        </View>
-    );
+
+  const [editItem, setEditItem] = useState<{ id: string | null; title: string; price: number; description: string }>({
+    id: null,
+    title: "",
+    price: 0, // Se cambió a 0 en lugar de "" para mantener el tipo correcto
+    description: "",
+  });
+
+
+
+  // ✅ Editar producto
+  const handleEdit = async () => {
+    if (editItem.id && editItem.title && editItem.price) {
+      await updateMenuItem(editItem.id, {
+        title: editItem.title,
+        price: editItem.price,
+        description: editItem.description,
+      });
+      setEditItem({ id: null, title: "", price: 0, description: "" });
+    }
+  };
+
+  // ✅ Renderizar cada producto
+  const renderItem = ({ item }: { item: MenuItem }) => (
+    <View style={styles.item}>
+      <Text>{item.title} - ${item.price.toFixed(2)}</Text>
+      <Text>{item.description}</Text>
+      <View style={styles.buttons}>
+        <TouchableOpacity
+          onPress={() =>
+            setEditItem({ id: item.id, title: item.title, price: item.price, description: item.description })
+          }
+          style={styles.editButton}
+        >
+          <Text style={{ color: "white" }}>Editar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => deleteMenuItem(item.id)} style={styles.deleteButton}>
+          <Text style={{ color: "white" }}>Eliminar</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Menú del Restaurante</Text>
+
+
+      <TouchableOpacity onPress={()=>{router.push("/(menu)/menuscreen")}} style={styles.addButton}>
+        <Text style={{ color: "white" }}>Agregar</Text>
+      </TouchableOpacity>
+
+      {/* Inputs para editar producto */}
+      {editItem.id && (
+        <>
+          <TextInput
+            placeholder="Nuevo nombre"
+            value={editItem.title}
+            onChangeText={(text) => setEditItem((prev) => ({ ...prev, title: text }))}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Nuevo precio"
+            value={editItem.price.toString()} // Convertir a string para evitar errores en el input
+            onChangeText={(text) => setEditItem((prev) => ({ ...prev, price: parseFloat(text) || 0 }))}
+            keyboardType="numeric"
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Nueva descripción"
+            value={editItem.description}
+            onChangeText={(text) => setEditItem((prev) => ({ ...prev, description: text }))}
+            style={styles.input}
+          />
+          <TouchableOpacity onPress={handleEdit} style={styles.updateButton}>
+            <Text style={{ color: "white" }}>Actualizar</Text>
+          </TouchableOpacity>
+        </>
+      )}
+
+      <FlatList data={menu} keyExtractor={(item) => item.id} renderItem={renderItem} />
+    </View>
+  );
 }

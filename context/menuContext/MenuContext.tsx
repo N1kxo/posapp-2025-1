@@ -29,12 +29,11 @@ export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const addMenuItem = async (item: Omit<MenuItem, "id">) => {
-    try {
-      const docRef = await addDoc(collection(db, "menu"), item);
-      setMenu((prev) => [...prev, { id: docRef.id, ...item }]);
-    } catch (error) {
-      console.error("Error al agregar el producto:", error);
-    }
+    const docRef = await addDoc(collection(db, "menu"), item);
+    const newItem = { id: docRef.id, ...item };
+    console.log("🚀 Agregando nuevo ítem:", newItem);
+  
+    
   };
 
   const updateMenuItem = async (id: string, item: Partial<MenuItem>) => {
