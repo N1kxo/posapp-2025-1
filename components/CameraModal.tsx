@@ -6,9 +6,10 @@ import { styles } from "../assets/styles/styles";
 
 interface CameraModalProps {
     isVisible: boolean;
-    image?: (uri: string) => void;
     onClose: () => void;
+    onCapture: (uri: string) => void;
 }
+
 
 export default function CameraModal(props: CameraModalProps) {
     const [facing, setFacing] = useState<CameraType>('back');
@@ -32,8 +33,8 @@ export default function CameraModal(props: CameraModalProps) {
 
         if (result) {
             setCapturedImage(result.uri);
-            props.image?.(result.uri);
         }
+
     };
 
     const open = async () => {
@@ -46,8 +47,9 @@ export default function CameraModal(props: CameraModalProps) {
 
         if (!result.canceled) {
             setCapturedImage(result.assets[0].uri);
-            props.image?.(result.assets[0].uri);
+            props.onCapture(result.assets[0].uri);
         }
+
     };
 
     if (!permission) {
@@ -66,7 +68,33 @@ export default function CameraModal(props: CameraModalProps) {
         <Modal visible={props.isVisible} animationType="slide">
             <View style={styles.container}>
                 {capturedImage ? (
-                    <Image source={{ uri: capturedImage }} style={styles.previewImage} />
+                    <>
+                        <Image source={{ uri: capturedImage }} style={styles.previewImage} />
+
+                        {/* Buttons shown AFTER image is captured */}
+                        <View style={{ marginTop: 20 }}>
+
+
+                            <TouchableOpacity
+                                onPress={() => setCapturedImage(null)}
+                                style={styles.buttonMenu}
+                            >
+                                <Text style={styles.controlsText}>🔄 Tomar otra</Text>
+                            </TouchableOpacity>   
+
+
+                            <TouchableOpacity
+                                onPress={() => {
+                                    if (capturedImage) props.onCapture?.(capturedImage); // ✅ se envía solo al confirmar
+                                    props.onClose();
+                                }}
+                                style={styles.buttonMenu}
+                            >
+                                <Text style={styles.controlsText}>✅ Confirmar y cerrar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </>
+
                 ) : (
                     <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
                         {/* Controles en la parte superior */}
