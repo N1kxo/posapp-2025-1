@@ -8,74 +8,94 @@ import { styles } from '@/assets/styles/styles'
 import { MenuContext } from "../../context/menuContext/MenuContext"
 import { useImage } from '@/context/imageContext/imageContext';
 import { MenuItem } from "../../interfaces/common"
-import { router } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { supabase } from "../../utils/SupabaseConfig"
 import * as FileSystem from 'expo-file-system'
 import { Buffer } from 'buffer';
 global.Buffer = Buffer;
 
+// ✅ Función para manejar strings de forma segura
+const getStringParam = (param: string | string[] | undefined): string => {
+  if (!param) return '';
+  return Array.isArray(param) ? param[0] : param;
+};
+
 export default function Index() {
-  const [image, setImage] = useState(undefined as string | undefined);
-  const [title, setTitle] = useState('');
-  const [price, setPrice] = useState('');
-  const [description, setDescription] = useState('');
+  const params = useLocalSearchParams();
+
+  const id = getStringParam(params.id);
+  const isEditMode = getStringParam(params.mode) === "edit";
+
+  const [title, setTitle] = useState(getStringParam(params.title));
+  const [price, setPrice] = useState(getStringParam(params.price));
+  const [description, setDescription] = useState(getStringParam(params.description));
+  const [image, setImage] = useState(getStringParam(params.imageUrl));
+  console.log("🖼️ Imagen inicial:", image);
+
   const [isVisible, setIsVisible] = useState(false);
 
   const menuContext = useContext(MenuContext);
   const { uploadImage, getImageUrl } = useImage();
 
-
   if (!menuContext) {
     return <Text>Error: MenuContext no está disponible</Text>;
   }
 
-  const { menu, addMenuItem } = menuContext;
-  console.log('🔍 Supabase instance:', supabase);
+  const { addMenuItem, updateMenuItem } = menuContext;
 
-
-
-  const handleAdd = async () => {
-    console.log("✅ handleAdd llamado");
-  
+  const handleSubmit = async () => {
     try {
       let imagePath: string | null = null;
-  
-      // Upload image if selected
+
+      if (isEditMode && id && image && image !== getStringParam(params.imageUrl)) {
+        // Get the old image path from the original URL
+        const oldImageUrl = getStringParam(params.imageUrl);
+        const pathToDelete = oldImageUrl.split("/storage/v1/object/public/")[1]?.split("?")[0];
+        
+        if (pathToDelete) {
+          const { error } = await supabase.storage.from("menu-images").remove([pathToDelete]);
+          if (error) {
+            console.warn("❌ Error deleting old image:", error.message);
+          } else {
+            console.log("🧹 Old image deleted!");
+          }
+        }
+      }
+
       if (image) {
         imagePath = await uploadImage(image);
       }
-  
+
       const imageUrl = imagePath ? getImageUrl(imagePath) : '';
-  
+
       if (title && price) {
-        await addMenuItem({
+        const menuItem = {
           title,
           price: parseFloat(price),
           description,
-          imageUrl,
-        });
-  
-        // Reset form
+          ...(imageUrl && { imageUrl }),
+        };
+
+        if (isEditMode && id) {
+          await updateMenuItem(id, menuItem);
+        } else {
+          await addMenuItem(menuItem);
+        }
+
+        // Limpiar campos
         setTitle('');
         setPrice('');
         setDescription('');
-        setImage(undefined);
-  
+        setImage("");
+
         router.push("/(menu)");
       }
     } catch (error) {
-      console.error("🚨 Error uploading or saving:", error);
+      console.error("🚨 Error:", error);
     }
-
-    router.push("./(menu)")
   };
-  
-
-
-
 
   return (
-
     <View style={styles.containerAddMenu}>
       {image ? (
         <View style={styles.imageContainer}>
@@ -124,24 +144,23 @@ export default function Index() {
         style={styles.descriptionInput}
       />
 
-      {/* Only one CameraModal here */}
       <CameraModal
         isVisible={isVisible}
         onClose={() => setIsVisible(false)}
         onCapture={(uri) => {
-          setImage(uri); // <- Aquí guardas la imagen
+          setImage(uri);
           setIsVisible(false);
         }}
       />
 
       <TouchableOpacity
-        onPress={handleAdd}
+        onPress={handleSubmit}
         style={styles.button}
       >
-        <Text style={styles.controlsText}>Submit</Text>
+        <Text style={styles.controlsText}>
+          {isEditMode ? "Actualizar" : "Crear"}
+        </Text>
       </TouchableOpacity>
-
-
     </View>
   );
 }

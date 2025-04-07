@@ -45,17 +45,33 @@ export const ImageProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  const deleteImage = async (path: string): Promise<boolean> => {
-    const { error } = await supabase.storage
-      .from('menu-images')
-      .remove([path]);
+  const deleteImage = async (fullUrl: string): Promise<boolean> => {
+    try {
+      // Remove domain and query string to get the actual path used by Supabase
+      
+      const baseUrl = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/public/`;
+      const pathWithParams = fullUrl.replace(baseUrl, '');
+      const path = pathWithParams.split('?')[0]; 
+      console.log('path:', path);// Remove token or query string
+  
+      const { error } = await supabase.storage
+        .from('menu-images')
+        .remove([path]);
+        console.log('se borro:', path);
 
-    if (error) {
-      console.error('Delete error:', error);
+        if (error) {
+            console.warn("❌ Error deleting old image:", error.message);
+          } else {
+            console.log("🧹 Old image deleted!");
+          }
+  
+
+  
+      return true;
+    } catch (err) {
+      console.error('❌ Unexpected error deleting image:', err);
       return false;
     }
-
-    return true;
   };
 
   const getImageUrl = (path: string): string => {

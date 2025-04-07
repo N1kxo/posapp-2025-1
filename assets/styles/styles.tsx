@@ -199,5 +199,15 @@ containerAddMenu:{
         borderRadius: 8,
         alignItems: "center",
     },
+    photo2: {
+        width: 120,
+        height: 120,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        borderColor: "rgb(134, 19, 136)",
+        borderWidth: 2,
+        overflow: 'hidden',
+      },
 
 });
