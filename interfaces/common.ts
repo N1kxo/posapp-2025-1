@@ -10,5 +10,19 @@ export interface MenuItem{
     title: string,
     price: number,
     description: string,
-    image?: string
+    imageUrl?: string;
 }
+
+export interface Producto {
+    cantidad: number;
+    nombre: string;
+  }
+  
+  export interface Pedido {
+    id: string;
+    estado: string;
+    date: any;
+    userID: string;
+    pedido: Producto[];
+  }
+  

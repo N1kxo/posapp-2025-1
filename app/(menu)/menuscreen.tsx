@@ -1,135 +1,166 @@
-import React, { useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, TextInput, StyleSheet } from "react-native";
-import { useContext } from "react";
-import { MenuContext } from "../../context/menuContext/MenuContext";
-import { MenuItem } from "../../interfaces/common"; // Asegúrate de importar la interfaz correcta
-import { styles } from "@/assets/styles/styles";
+import 'react-native-url-polyfill/auto' // ✅ First!
+import { View, Text, TouchableOpacity, ImageBackground } from 'react-native'
+import React, { useContext, useState } from 'react'
+import { TextInput } from 'react-native'
+import Entypo from '@expo/vector-icons/Entypo'
+import CameraModal from '@/components/CameraModal'
+import { styles } from '@/assets/styles/styles'
+import { MenuContext } from "../../context/menuContext/MenuContext"
+import { useImage } from '@/context/imageContext/imageContext';
+import { MenuItem } from "../../interfaces/common"
+import { router, useLocalSearchParams } from 'expo-router'
+import { supabase } from "../../utils/SupabaseConfig"
+import * as FileSystem from 'expo-file-system'
+import { Buffer } from 'buffer';
+global.Buffer = Buffer;
 
-export default function MenuScreen() {
+// ✅ Función para manejar strings de forma segura
+const getStringParam = (param: string | string[] | undefined): string => {
+  if (!param) return '';
+  return Array.isArray(param) ? param[0] : param;
+};
+
+export default function Index() {
+  const params = useLocalSearchParams();
+
+  const id = getStringParam(params.id);
+  const isEditMode = getStringParam(params.mode) === "edit";
+
+  const [title, setTitle] = useState(getStringParam(params.title));
+  const [price, setPrice] = useState(getStringParam(params.price));
+  const [description, setDescription] = useState(getStringParam(params.description));
+  const [image, setImage] = useState(getStringParam(params.imageUrl));
+  console.log("🖼️ Imagen inicial:", image);
+
+  const [isVisible, setIsVisible] = useState(false);
+
   const menuContext = useContext(MenuContext);
+  const { uploadImage, getImageUrl } = useImage();
 
   if (!menuContext) {
     return <Text>Error: MenuContext no está disponible</Text>;
   }
 
-  const { menu, addMenuItem, updateMenuItem, deleteMenuItem } = menuContext;
+  const { addMenuItem, updateMenuItem } = menuContext;
 
-  const [newItem, setNewItem] = useState<{ title: string; price: string; description: string }>({
-    title: "",
-    price: "",
-    description: "",
-  });
+  const handleSubmit = async () => {
+    try {
+      let imagePath: string | null = null;
 
-  const [editItem, setEditItem] = useState<{ id: string | null; title: string; price: number; description: string }>({
-    id: null,
-    title: "",
-    price: 0, // Se cambió a 0 en lugar de "" para mantener el tipo correcto
-    description: "",
-  });
-
-  // ✅ Agregar producto
-  const handleAdd = async () => {
-    if (newItem.title && newItem.price) {
-      await addMenuItem({
-        title: newItem.title,
-        price: parseFloat(newItem.price),
-        description: newItem.description,
-      });
-      setNewItem({ title: "", price: "", description: "" });
-    }
-  };
-
-  // ✅ Editar producto
-  const handleEdit = async () => {
-    if (editItem.id && editItem.title && editItem.price) {
-      await updateMenuItem(editItem.id, {
-        title: editItem.title,
-        price: editItem.price,
-        description: editItem.description,
-      });
-      setEditItem({ id: null, title: "", price: 0, description: "" });
-    }
-  };
-
-  // ✅ Renderizar cada producto
-  const renderItem = ({ item }: { item: MenuItem }) => (
-    <View style={styles.item}>
-      <Text>{item.title} - ${item.price.toFixed(2)}</Text>
-      <Text>{item.description}</Text>
-      <View style={styles.buttons}>
-        <TouchableOpacity
-          onPress={() =>
-            setEditItem({ id: item.id, title: item.title, price: item.price, description: item.description })
+      if (isEditMode && id && image && image !== getStringParam(params.imageUrl)) {
+        // Get the old image path from the original URL
+        const oldImageUrl = getStringParam(params.imageUrl);
+        const pathToDelete = oldImageUrl.split("/storage/v1/object/public/")[1]?.split("?")[0];
+        
+        if (pathToDelete) {
+          const { error } = await supabase.storage.from("menu-images").remove([pathToDelete]);
+          if (error) {
+            console.warn("❌ Error deleting old image:", error.message);
+          } else {
+            console.log("🧹 Old image deleted!");
           }
-          style={styles.editButton}
-        >
-          <Text style={{ color: "white" }}>Editar</Text>
-        </TouchableOpacity>
+        }
+      }
 
-        <TouchableOpacity onPress={() => deleteMenuItem(item.id)} style={styles.deleteButton}>
-          <Text style={{ color: "white" }}>Eliminar</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+      if (image) {
+        imagePath = await uploadImage(image);
+      }
+
+      const imageUrl = imagePath ? getImageUrl(imagePath) : '';
+
+      if (title && price) {
+        const menuItem = {
+          title,
+          price: parseFloat(price),
+          description,
+          ...(imageUrl && { imageUrl }),
+        };
+
+        if (isEditMode && id) {
+          await updateMenuItem(id, menuItem);
+        } else {
+          await addMenuItem(menuItem);
+        }
+
+        // Limpiar campos
+        setTitle('');
+        setPrice('');
+        setDescription('');
+        setImage("");
+
+        router.push("/(menu)");
+      }
+    } catch (error) {
+      console.error("🚨 Error:", error);
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Menú del Restaurante</Text>
-
-      {/* Inputs para agregar producto */}
-      <TextInput
-        placeholder="Nombre del producto"
-        value={newItem.title}
-        onChangeText={(text) => setNewItem((prev) => ({ ...prev, title: text }))}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Precio"
-        value={newItem.price}
-        onChangeText={(text) => setNewItem((prev) => ({ ...prev, price: text }))}
-        keyboardType="numeric"
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Descripción"
-        value={newItem.description}
-        onChangeText={(text) => setNewItem((prev) => ({ ...prev, description: text }))}
-        style={styles.input}
-      />
-      <TouchableOpacity onPress={handleAdd} style={styles.addButton}>
-        <Text style={{ color: "white" }}>Agregar</Text>
-      </TouchableOpacity>
-
-      {/* Inputs para editar producto */}
-      {editItem.id && (
-        <>
-          <TextInput
-            placeholder="Nuevo nombre"
-            value={editItem.title}
-            onChangeText={(text) => setEditItem((prev) => ({ ...prev, title: text }))}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Nuevo precio"
-            value={editItem.price.toString()} // Convertir a string para evitar errores en el input
-            onChangeText={(text) => setEditItem((prev) => ({ ...prev, price: parseFloat(text) || 0 }))}
-            keyboardType="numeric"
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Nueva descripción"
-            value={editItem.description}
-            onChangeText={(text) => setEditItem((prev) => ({ ...prev, description: text }))}
-            style={styles.input}
-          />
-          <TouchableOpacity onPress={handleEdit} style={styles.updateButton}>
-            <Text style={{ color: "white" }}>Actualizar</Text>
+    <View style={styles.containerAddMenu}>
+      {image ? (
+        <View style={styles.imageContainer}>
+          <ImageBackground
+            source={{ uri: image }}
+            style={styles.photo}
+            resizeMode="cover"
+          >
+            <TouchableOpacity onPress={() => setIsVisible(true)} style={styles.cameraButton}>
+              <Entypo name="camera" size={30} color="black" />
+            </TouchableOpacity>
+          </ImageBackground>
+        </View>
+      ) : (
+        <View>
+          <TouchableOpacity onPress={() => setIsVisible(true)} style={styles.imageContainer}>
+            <Entypo name="camera" size={30} color="black" />
           </TouchableOpacity>
-        </>
+        </View>
       )}
 
-      <FlatList data={menu} keyExtractor={(item) => item.id} renderItem={renderItem} />
+      {/* Title */}
+      <TextInput
+        placeholder="Enter title"
+        value={title}
+        onChangeText={setTitle}
+        style={styles.titleInput}
+      />
+
+      {/* Price */}
+      <TextInput
+        placeholder="Enter price"
+        value={price}
+        onChangeText={setPrice}
+        keyboardType="numeric"
+        style={styles.priceInput}
+      />
+
+      {/* Description */}
+      <TextInput
+        placeholder="Enter description"
+        value={description}
+        onChangeText={setDescription}
+        multiline
+        numberOfLines={3}
+        style={styles.descriptionInput}
+      />
+
+      <CameraModal
+        isVisible={isVisible}
+        onClose={() => setIsVisible(false)}
+        onCapture={(uri) => {
+          setImage(uri);
+          setIsVisible(false);
+        }}
+      />
+
+      <TouchableOpacity
+        onPress={handleSubmit}
+        style={styles.button}
+      >
+        <Text style={styles.controlsText}>
+          {isEditMode ? "Actualizar" : "Crear"}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
