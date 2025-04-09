@@ -5,11 +5,11 @@ import { TextInput } from 'react-native'
 import Entypo from '@expo/vector-icons/Entypo'
 import CameraModal from '@/components/CameraModal'
 import { styles } from '@/assets/styles/styles'
-import { MenuContext } from "../../context/menuContext/MenuContext"
+import { MenuContext } from "../../../context/menuContext/MenuContext"
 import { useImage } from '@/context/imageContext/imageContext';
-import { MenuItem } from "../../interfaces/common"
+import { MenuItem } from "../../../interfaces/common"
 import { router, useLocalSearchParams } from 'expo-router'
-import { supabase } from "../../utils/SupabaseConfig"
+import { supabase } from "../../../utils/SupabaseConfig"
 import * as FileSystem from 'expo-file-system'
 import { Buffer } from 'buffer';
 global.Buffer = Buffer;
@@ -47,13 +47,7 @@ export default function Index() {
     try {
       let imagePath: string | null = null;
 
-      if (isEditMode && id && image && image !== getStringParam(params.imageUrl)) {
-        
-        imagePath = await updateImage(image, getStringParam(params.imageUrl));
-      } else if (image) {
-        
-        imagePath = await uploadImage(image);
-      }
+
 
       if (image) {
         imagePath = await uploadImage(image);

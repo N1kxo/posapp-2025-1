@@ -6,6 +6,8 @@ export interface User{
 }
 
 export interface MenuItem{
+   
+
     id: string,
     title: string,
     price: number,
@@ -19,10 +21,12 @@ export interface Producto {
   }
   
   export interface Pedido {
+    createdAt: any;
     id: string;
     estado: string;
-    date: any;
-    userID: string;
     pedido: Producto[];
+    mesa: string;
+    userId: string;
+    total: number;
   }
   
