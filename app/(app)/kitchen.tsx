@@ -90,6 +90,11 @@ export default function KitchenScreen() {
   const renderPedido = ({ item }: { item: Pedido }) => {
     const isOrdenado = item.estado === "Ordenado";
 
+    // Calcular minutos transcurridos desde la creación
+    const now = new Date();
+    const createdAt = item.createdAt.toDate(); // Firestore Timestamp → Date
+    const minutosTranscurridos = Math.floor((now.getTime() - createdAt.getTime()) / 60000); // en minutos
+
     return (
       <View
         style={[
@@ -99,6 +104,7 @@ export default function KitchenScreen() {
         ]}
       >
         <Text style={styles.title}>🍽 Pedido - Estado: {item.estado}</Text>
+        <Text style={styles.input}>⏱ Hace {minutosTranscurridos} min</Text>
         <Text style={styles.input}>Fecha: {item.createdAt.toDate().toLocaleString()}</Text>
         <Text style={styles.input}>Cliente: {item.mesa}</Text>
 
