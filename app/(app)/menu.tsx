@@ -8,6 +8,7 @@ import { styles } from "@/assets/styles/styles";
 import { router } from "expo-router";
 import { collection, query, where, onSnapshot, doc, getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { useLocalSearchParams } from 'expo-router';
 
 const db = getFirestore();
 
@@ -21,6 +22,9 @@ export default function MenuScreen() {
   const [userOrders, setUserOrders] = useState<Pedido[]>([]);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [total, setTotal] = useState(0);
+
+  const  {qr}  = useLocalSearchParams();
+  const qrString = Array.isArray(qr) ? qr[0] : qr;
 
 
   const { createOrder } = useOrder();
@@ -58,7 +62,7 @@ export default function MenuScreen() {
           createdAt: data.createdAt,
           mesa: data.mesa,
           userId: data.user,
-          total: data.total ?? 0, // <- Aseguramos que siempre tenga un valor numérico
+          total: data.total ?? 0, 
           pedido: Array.isArray(data.items)
             ? data.items.map((item) => ({
                 nombre: item.itemId,
@@ -139,8 +143,8 @@ export default function MenuScreen() {
 
   
     
+    const id = await createOrder(itemsArray, total, qrString);
 
-    const id = await createOrder(itemsArray, total);
     if (id) {
       setOrderId(id);
       setQuantities({});
