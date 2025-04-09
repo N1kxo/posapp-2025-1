@@ -209,5 +209,16 @@ containerAddMenu:{
         borderWidth: 2,
         overflow: 'hidden',
       },
-
+      pedidoCard: {
+        borderRadius: 10,
+        padding: 15,
+        marginVertical: 10,
+        borderWidth: 2,
+        backgroundColor: "#fff", // se sobreescribe con el color según estado
+    },
+    
+    pedidoCardResaltado: {
+        borderColor: "rgb(134, 19, 136)", // Borde más llamativo (Dark Magenta)
+        borderWidth: 4,
+    },
 });
