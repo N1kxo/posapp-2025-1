@@ -16,20 +16,31 @@ export default function KitchenScreen() {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      console.log("🔥 Documentos encontrados:", snapshot.docs.length);
       const fetched = snapshot.docs.map((doc) => {
         const data = doc.data();
         return {
           id: doc.id,
-          ...data,
-          // Aseguramos que 'pedido' sea siempre un array
-          pedido: Array.isArray(data.pedido)
-            ? data.pedido
-            : Object.values(data.pedido ?? {}),
+          estado: data.estado,
+          createdAt: data.createdAt,
+          mesa: data.mesa,
+          userId: data.user,
+          pedido: Array.isArray(data.items)
+          ? data.items.map((item) => ({
+              nombre: item.itemId,
+              cantidad: item.quantity,
+            }))
+          : [],
         };
-      }) as Pedido[];
+      });
+      
 
       // Ordenar localmente por fecha (ascendente)
-      const ordenados = fetched.sort((a, b) => a.date.toDate() - b.date.toDate());
+      const ordenados = fetched
+      .filter((p) => p.createdAt) // solo si tiene el campo
+      .sort((a, b) => a.createdAt.toDate() - b.createdAt.toDate());
+    
+
 
       setPedidos(ordenados);
     });
@@ -87,8 +98,8 @@ export default function KitchenScreen() {
         ]}
       >
         <Text style={styles.title}>🍽 Pedido - Estado: {item.estado}</Text>
-        <Text style={styles.input}>Fecha: {item.date.toDate().toLocaleString()}</Text>
-        <Text style={styles.input}>Cliente: {item.userID}</Text>
+        <Text style={styles.input}>Fecha: {item.createdAt.toDate().toLocaleString()}</Text>
+        <Text style={styles.input}>Cliente: {item.mesa}</Text>
 
         {item.pedido.map((producto, idx) => (
           <Text key={idx} style={styles.input}>

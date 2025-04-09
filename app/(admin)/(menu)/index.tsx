@@ -1,8 +1,8 @@
 import React, { useState, useContext } from "react";
 import { View, Text, FlatList, TouchableOpacity, Image, ImageBackground } from "react-native";
-import { MenuContext } from "../../context/menuContext/MenuContext";
+import { MenuContext } from "../../../context/menuContext/MenuContext";
 import { useImage } from '@/context/imageContext/imageContext';
-import { MenuItem } from "../../interfaces/common";
+import { MenuItem } from "../../../interfaces/common";
 import { styles } from "@/assets/styles/styles";
 import { router } from "expo-router";
 
