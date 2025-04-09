@@ -26,5 +26,7 @@ export interface Producto {
     estado: string;
     pedido: Producto[];
     mesa: string;
+    userId: string;
+    total: number;
   }
   

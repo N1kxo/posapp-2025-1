@@ -19,11 +19,12 @@ export type Order = {
   mesa: string;
   createdAt: Date;
   user: string;
+  total: number,
 };
 
 // ✅ Tipo del contexto
 type OrderContextType = {
-  createOrder: (items: OrderItem[]) => Promise<string | null>;
+  createOrder: (items: OrderItem[], total: number) => Promise<string | null>;
 };
 
 // ✅ Crear contexto
@@ -31,7 +32,7 @@ export const OrderContext = createContext<OrderContextType | undefined>(undefine
 
 // ✅ Provider del contexto
 export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const createOrder = async (items: OrderItem[]): Promise<string | null> => {
+  const createOrder = async (items: OrderItem[], total: number): Promise<string | null> => {
     const user = auth.currentUser;
 
     if (!user) {
@@ -46,6 +47,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       mesa: "mesa X",
       createdAt: new Date(),
       user: auth.currentUser?.uid,
+      total: total,
 
     };
 
