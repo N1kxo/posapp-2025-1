@@ -15,7 +15,7 @@ export default function MenuScreen() {
 
   const { menu, deleteMenuItem } = menuContext;
 
-  const { getImageUrl, deleteImage } = useImage();
+  const { getImageUrl} = useImage();
 
   const renderItem = ({ item }: { item: MenuItem }) => {
     const imageUrl = item.imageUrl ? getImageUrl(item.imageUrl) : null;
@@ -54,9 +54,6 @@ export default function MenuScreen() {
           <TouchableOpacity
             onPress={() => {
               deleteMenuItem(item.id);
-              if (item.imageUrl) {
-                 deleteImage(item.imageUrl);
-              }
             }}
             style={styles.deleteButton}
           >
