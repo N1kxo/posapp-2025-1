@@ -47,7 +47,7 @@
                     const role = userData.role; // Get the role from Firestore
         
                     if (role === "client") {
-                        router.push("/(app)/menu");
+                        router.push("/(app)/qr");
                     } else if (role === "cashier") {
                         router.push("/(app)/cashier");
                     } else if (role === "chef") {

@@ -16,6 +16,8 @@ export default function _layout() {
           <Stack.Screen name="cashier" options={{ headerShown: false }} />
           <Stack.Screen name="kitchen" options={{ headerShown: false}} />
           <Stack.Screen name="menu" options={{ headerShown: false}} />
+          <Stack.Screen name="qr" options={{ headerShown: false}} />
+
         </Stack>
         </ImageProvider>
       </MenuProvider>
