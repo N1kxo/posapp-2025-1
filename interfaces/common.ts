@@ -21,12 +21,15 @@ export interface Producto {
   }
   
   export interface Pedido {
-    createdAt: any;
     id: string;
     estado: string;
-    pedido: Producto[];
+    createdAt: any; // idealmente Firebase Timestamp
     mesa: string;
     userId: string;
     total: number;
+    pedido: {
+      nombre: string;
+      cantidad: number;
+    }[];
   }
   
