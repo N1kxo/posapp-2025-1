@@ -93,7 +93,7 @@ export default function MenuScreen() {
 
   const renderItem = ({ item }: { item: MenuItem }) => {
     const imageUrl = item.imageUrl ? getImageUrl(item.imageUrl) : null;
-
+  
     return (
       <View style={styles.item}>
         {imageUrl && (
@@ -103,16 +103,32 @@ export default function MenuScreen() {
             resizeMode="cover"
           />
         )}
-        <Text>{item.title} </Text>
-        <Text> ${item.price.toFixed(2)}</Text>
-        <Text>{item.description}</Text>
-
-        <Button title="-" onPress={() => changeQuantity(item.title, -1)} />
-        <Text>{quantities[item.title] || 0}</Text>
-        <Button title="+" onPress={() => changeQuantity(item.title, 1)} />
+        <Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
+        <Text style={styles.itemDescription}>{item.description}</Text>
+  
+        {/* Controles en fila */}
+        <View style={styles.quantityContainer}>
+          <TouchableOpacity
+            style={styles.quantityButton}
+            onPress={() => changeQuantity(item.title, -1)}
+          >
+            <Text style={styles.quantityButtonText}>−</Text>
+          </TouchableOpacity>
+  
+          <Text style={styles.quantityText}>{quantities[item.title] || 0}</Text>
+  
+          <TouchableOpacity
+            style={styles.quantityButton}
+            onPress={() => changeQuantity(item.title, 1)}
+          >
+            <Text style={styles.quantityButtonText}>+</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   };
+  
 
   const addItem = async () => {
     
@@ -157,7 +173,9 @@ export default function MenuScreen() {
         renderItem={renderItem}
       />
 
-      <Button title="Ver pedido" onPress={() => setModalVisible(true)} />
+      <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
+        <Text style={styles.buttonText}>Ver pedido</Text>
+      </TouchableOpacity>
       <Modal
         animationType="slide"
         transparent={true}
@@ -229,9 +247,9 @@ export default function MenuScreen() {
                   addItem();
                   setModalVisible(false);
                 }}
-                style={{ backgroundColor: '#2196F3', padding: 10, borderRadius: 5, flex: 1 }}
+                style={{ backgroundColor: '#861388', padding: 10, borderRadius: 5, flex: 1 }}
               >
-                <Text style={{ color: 'white', textAlign: 'center' }}>Ordenar</Text>
+                <Text style={{ color: 'white', textAlign: 'center'}}>Ordenar</Text>
               </Pressable>
             </View>
           </View>

@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
         marginTop: 15,
         alignSelf: "center",
     },
-containerAddMenu:{
+    containerAddMenu:{
 
         flex: 1,
         justifyContent: "center",
@@ -129,8 +129,8 @@ containerAddMenu:{
         padding: 5, 
         paddingHorizontal: 10,
         fontSize: 16,
-      },
-      priceInput: {
+    },
+    priceInput: {
         width: "50%",
         borderWidth: 1,
         borderColor:"rgb(134, 19, 136)",
@@ -139,8 +139,8 @@ containerAddMenu:{
         paddingHorizontal: 10,
         fontSize: 16,
         
-      },
-      descriptionInput: {
+    },
+    descriptionInput: {
         width: "50%",
         borderWidth: 1,
         borderColor:"rgb(134, 19, 136)",
@@ -148,8 +148,8 @@ containerAddMenu:{
         fontSize: 16,
         textAlignVertical: 'top',
         backgroundColor: "#ccc",
-      },
-      titleInput:{
+    },
+    titleInput:{
 
         width: "50%",
         borderWidth: 1,
@@ -160,12 +160,10 @@ containerAddMenu:{
         backgroundColor: "#ccc",
      
         
-      } ,
+    },
     
-
-
     item: {
-        backgroundColor: "rgb(135, 160, 178)", // Azul grisáceo
+        backgroundColor: "rgb(164, 190, 243)", // Jordy Blue
         padding: 15,
         borderRadius: 8,
         marginBottom: 10,
@@ -203,6 +201,8 @@ containerAddMenu:{
         width: 120,
         height: 120,
         justifyContent: 'center',
+        alignContent: 'center',
+        alignSelf: 'center',
         alignItems: 'center',
         borderRadius: 10,
         borderColor: "rgb(134, 19, 136)",
@@ -221,4 +221,64 @@ containerAddMenu:{
         borderColor: "rgb(134, 19, 136)", // Borde más llamativo (Dark Magenta)
         borderWidth: 4,
     },
+      itemTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "rgb(0, 0, 0)",
+        alignContent: "center",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        marginBottom: 5,
+      },
+      
+      itemPrice: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: "rgb(134, 19, 136)",
+        marginBottom: 8,
+        alignContent: "center",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+      },
+      itemDescription: {
+        fontSize: 14,
+        color: "rgb(0, 0, 0)",
+        marginBottom: 8,
+        textAlign: "center",
+        alignContent: "center",
+        alignItems: "center",
+        justifyContent: "center",
+      },
+
+      
+      quantityContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 10,
+        gap: 10, // o usa marginHorizontal
+      },
+      
+      quantityButton: {
+        backgroundColor: "rgb(134, 19, 136)",
+        paddingVertical: 8,
+        paddingHorizontal: 15,
+        borderRadius: 6,
+      },
+      
+      quantityButtonText: {
+        color: "white",
+        fontSize: 20,
+        fontWeight: "bold",
+      },
+      
+      quantityText: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "black",
+        marginHorizontal: 10,
+      },
+      
 });
