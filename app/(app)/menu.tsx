@@ -58,15 +58,16 @@ export default function MenuScreen() {
           createdAt: data.createdAt,
           mesa: data.mesa,
           userId: data.user,
-          total: data.total,
+          total: data.total ?? 0, // <- Aseguramos que siempre tenga un valor numérico
           pedido: Array.isArray(data.items)
             ? data.items.map((item) => ({
-              nombre: item.itemId,
-              cantidad: item.quantity,
-            }))
+                nombre: item.itemId,
+                cantidad: item.quantity,
+              }))
             : [],
         };
       });
+      
 
       // Ordenar por fecha descendente
       const ordenados = fetched.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());

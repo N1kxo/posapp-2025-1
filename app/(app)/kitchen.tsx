@@ -25,6 +25,7 @@ export default function KitchenScreen() {
           createdAt: data.createdAt,
           mesa: data.mesa,
           userId: data.user,
+          total: data.total,
           pedido: Array.isArray(data.items)
           ? data.items.map((item) => ({
               nombre: item.itemId,
