@@ -48,18 +48,11 @@ export default function Index() {
       let imagePath: string | null = null;
 
       if (isEditMode && id && image && image !== getStringParam(params.imageUrl)) {
-        // Get the old image path from the original URL
-        const oldImageUrl = getStringParam(params.imageUrl);
-        const pathToDelete = oldImageUrl.split("/storage/v1/object/public/")[1]?.split("?")[0];
         
-        if (pathToDelete) {
-          const { error } = await supabase.storage.from("menu-images").remove([pathToDelete]);
-          if (error) {
-            console.warn("❌ Error deleting old image:", error.message);
-          } else {
-            console.log("🧹 Old image deleted!");
-          }
-        }
+        imagePath = await updateImage(image, getStringParam(params.imageUrl));
+      } else if (image) {
+        
+        imagePath = await uploadImage(image);
       }
 
       if (image) {
