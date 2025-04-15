@@ -1,59 +1,32 @@
-import { AuthContext } from "../../context/authContext/AuthContext"; 
-import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useContext } from 'react';
+import { router } from 'expo-router';
+import { styles } from '@/assets/styles/styles';
+import { AuthContext } from '@/context/authContext/AuthContext'; // Ajusta el path si es necesario
 
-export default function RoleSelectionForm() {
-    const [email, setEmail] = useState('');
-    const [role, setRole] = useState<'client' | 'chef' | 'cashier'>('client');
-    const [loading, setLoading] = useState(false);
+export default function HomeScreen() {
+  const auth = useContext(AuthContext);
 
-    const auth = useContext(AuthContext);
-    
-    const handleUpdate = async () => {
-        if (!email) {
-            Alert.alert("Error", "Por favor ingresa un correo electrónico");
-            return;
-        }
+  const handleLogout = async () => {
+    await auth?.logout();
+    router.push('../'); // Redirige al login u otra pantalla de inicio
+  };
 
-        if (!auth?.user) {
-            Alert.alert("Error", "No hay un usuario autenticado.");
-            return;
-        }
+  return (
+    <View style={styles.container}>
+      <Text>Welcome 👋</Text>
 
-        setLoading(true);
+      <TouchableOpacity style={styles.button} onPress={() => router.push('../(admin)/(menu)')}>
+        <Text style={styles.buttonText}>Go to Menu</Text>
+      </TouchableOpacity>
 
-        const success = await auth.updateRole(role, email);
-        setLoading(false);
+      <TouchableOpacity style={styles.button} onPress={() => router.push('../(admin)/(roles)')}>
+        <Text style={styles.buttonText}>Go to Roles</Text>
+      </TouchableOpacity>
 
-        if (success) {
-            Alert.alert("Éxito", `El rol de ${auth.user.email} ha sido actualizado a ${role}`);
-        } else {
-            Alert.alert("Error", "No se pudo actualizar el rol.");
-        }
-    };
-
-    return (
-        <View style={{ padding: 20 }}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Registro de Usuario</Text>
-            
-            <Text>Correo electrónico:</Text>
-            <TextInput
-                style={{ borderWidth: 1, padding: 8, marginBottom: 10, borderRadius: 5 }}
-                placeholder="Ingrese su correo"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-            />
-            
-            <Text>Selecciona un rol:</Text>
-            
-            <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10 }}>
-                {["client", "chef", "cashier"].map((item) => (
-                    <Button key={item} title={item} onPress={() => setRole(item as 'client' | 'chef' | 'cashier')} />
-                ))}
-            </View>
-            
-            <Button title={loading ? "Actualizando..." : "Registrar"} onPress={handleUpdate} disabled={loading} />
-        </View>
-    );
+      <TouchableOpacity style={[styles.button, { backgroundColor: '#FF5C5C' }]} onPress={handleLogout}>
+        <Text style={{ color: 'Redc' }}>Cerrar sesión</Text>
+      </TouchableOpacity>
+    </View>
+  );
 }

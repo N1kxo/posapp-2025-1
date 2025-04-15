@@ -41,6 +41,20 @@ export const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: 20,
     },
+    qrContainer: {
+        width: '100%',
+        paddingHorizontal: 20,
+        alignItems: 'center',
+        marginTop: 20, // Espacio entre la cámara y los botones
+        marginBottom: 20, // Espacio en la parte inferior
+    },
+      
+      qrText: {
+        fontSize: 18,
+        color: 'white',
+        marginBottom: 20,                 // Espacio entre el texto y los botones
+        textAlign: 'center',              // Centra el texto
+      },
     camera: {
         flex: 1,
         width: "100%",
@@ -83,16 +97,12 @@ export const styles = StyleSheet.create({
         marginTop: 15,
         alignSelf: "center",
     },
-containerAddMenu:{
-
+    containerAddMenu: {
         flex: 1,
-        justifyContent: "center",
+        justifyContent: "flex-start", // Cambiado de "center" a "flex-start"
         alignItems: "center",
-        height: "100%",
-        width: "100%",
         backgroundColor: "rgb(164, 190, 243)",
-        gap: 50,
-
+        paddingTop: 20, // Espacio en la parte superior
     },
 
     photo: {
@@ -108,18 +118,18 @@ containerAddMenu:{
     },
     
     imageContainer: {
-        width: '50%', // o un valor fijo como 300
-        aspectRatio: 4 / 4, // ajusta según la forma que quieras
+        width: '50%', // Aumenté el ancho para mejor visibilidad
+        height: '50%',
+        aspectRatio: 1, // Definir altura explícita
         borderRadius: 10,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor:"rgb(134, 19, 136)",
-        backgroundColor: '#ccc',
-        justifyContent: 'center',
-        alignItems: 'center',
-        // solo mientras no hay imagen
+        borderColor: "rgb(134, 19, 136)",
+        marginTop: 20, // Espacio arriba
+        marginBottom: 20, // Espacio abajo
     },
-    
+
+
     cameraButton: {
         position: 'absolute',
         bottom: 10,
@@ -129,8 +139,8 @@ containerAddMenu:{
         padding: 5, 
         paddingHorizontal: 10,
         fontSize: 16,
-      },
-      priceInput: {
+    },
+    priceInput: {
         width: "50%",
         borderWidth: 1,
         borderColor:"rgb(134, 19, 136)",
@@ -139,8 +149,8 @@ containerAddMenu:{
         paddingHorizontal: 10,
         fontSize: 16,
         
-      },
-      descriptionInput: {
+    },
+    descriptionInput: {
         width: "50%",
         borderWidth: 1,
         borderColor:"rgb(134, 19, 136)",
@@ -148,8 +158,8 @@ containerAddMenu:{
         fontSize: 16,
         textAlignVertical: 'top',
         backgroundColor: "#ccc",
-      },
-      titleInput:{
+    },
+    titleInput:{
 
         width: "50%",
         borderWidth: 1,
@@ -160,12 +170,10 @@ containerAddMenu:{
         backgroundColor: "#ccc",
      
         
-      } ,
+    },
     
-
-
     item: {
-        backgroundColor: "rgb(135, 160, 178)", // Azul grisáceo
+        backgroundColor: "rgb(164, 190, 243)", // Jordy Blue
         padding: 15,
         borderRadius: 8,
         marginBottom: 10,
@@ -203,6 +211,8 @@ containerAddMenu:{
         width: 120,
         height: 120,
         justifyContent: 'center',
+        alignContent: 'center',
+        alignSelf: 'center',
         alignItems: 'center',
         borderRadius: 10,
         borderColor: "rgb(134, 19, 136)",
@@ -221,4 +231,129 @@ containerAddMenu:{
         borderColor: "rgb(134, 19, 136)", // Borde más llamativo (Dark Magenta)
         borderWidth: 4,
     },
+      itemTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "rgb(0, 0, 0)",
+        alignContent: "center",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        marginBottom: 5,
+      },
+      
+      itemPrice: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: "rgb(134, 19, 136)",
+        marginBottom: 8,
+        alignContent: "center",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+      },
+      itemDescription: {
+        fontSize: 14,
+        color: "rgb(0, 0, 0)",
+        marginBottom: 8,
+        textAlign: "center",
+        alignContent: "center",
+        alignItems: "center",
+        justifyContent: "center",
+      },
+
+      
+      quantityContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 10,
+        gap: 10, // o usa marginHorizontal
+      },
+      
+      quantityButton: {
+        backgroundColor: "rgb(134, 19, 136)",
+        paddingVertical: 8,
+        paddingHorizontal: 15,
+        borderRadius: 6,
+      },
+      
+      quantityButtonText: {
+        color: "white",
+        fontSize: 20,
+        fontWeight: "bold",
+      },
+      
+      quantityText: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "black",
+        marginHorizontal: 10,
+      },
+      filterBox: {
+        backgroundColor:  "rgb(134, 19, 136)", // Dark Magenta
+        padding: 5,
+        borderRadius: 8,
+        flexDirection: 'row',  // This will place items side by side
+        alignItems: 'center',  // Aligns items vertically in the center
+        justifyContent: 'space-between', 
+        marginTop: 2,
+    },
+    cameraContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+      },
+
+
+    checkboxContainer: {
+        flexDirection: "row",
+        alignItems: "center", // Centrado vertical
+        backgroundColor: "#f2f2f2",
+        borderRadius: 8,
+        padding: 10,
+        marginBottom: 10,
+        height: 60,
+      },
+    
+      icon: {
+        width: 30,            // ✅ Asegura que todos los íconos ocupen el mismo espacio
+        textAlign: 'center',
+      },
+    
+      paymentText: {
+        marginLeft: 10,
+        fontSize: 16,
+        fontWeight: '500',
+        textAlign: 'left',     // ✅ Alineación a la izquierda
+        flex: 1,               // ✅ Hace que el texto se expanda hacia la derecha
+      },
+      imageContainer2: {
+        width: '50%', // o un valor fijo como 300
+        aspectRatio: 4 / 4, // ajusta según la forma que quieras
+        borderRadius: 10,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor:"rgb(134, 19, 136)",
+        backgroundColor: '#ccc',
+        justifyContent: 'center',
+        alignItems: 'center',
+        // solo mientras no hay imagen
+    },
+    containerAddMenu2:{
+
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+        width: "100%",
+        backgroundColor: "rgb(164, 190, 243)",
+        gap: 50,
+
+    },
+      
+      
+    
+      
 });

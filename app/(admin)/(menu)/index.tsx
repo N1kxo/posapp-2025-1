@@ -1,8 +1,8 @@
 import React, { useState, useContext } from "react";
 import { View, Text, FlatList, TouchableOpacity, Image, ImageBackground } from "react-native";
-import { MenuContext } from "../../context/menuContext/MenuContext";
+import { MenuContext } from "../../../context/menuContext/MenuContext";
 import { useImage } from '@/context/imageContext/imageContext';
-import { MenuItem } from "../../interfaces/common";
+import { MenuItem } from "../../../interfaces/common";
 import { styles } from "@/assets/styles/styles";
 import { router } from "expo-router";
 
@@ -15,7 +15,7 @@ export default function MenuScreen() {
 
   const { menu, deleteMenuItem } = menuContext;
 
-  const { getImageUrl, deleteImage } = useImage();
+  const { getImageUrl} = useImage();
 
   const renderItem = ({ item }: { item: MenuItem }) => {
     const imageUrl = item.imageUrl ? getImageUrl(item.imageUrl) : null;
@@ -54,9 +54,6 @@ export default function MenuScreen() {
           <TouchableOpacity
             onPress={() => {
               deleteMenuItem(item.id);
-              if (item.imageUrl) {
-                 deleteImage(item.imageUrl);
-              }
             }}
             style={styles.deleteButton}
           >

@@ -13,7 +13,6 @@ export default function _layout() {
         <MenuProvider>
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="menuscreen" options={{ headerShown: false }} />
           </Stack>
         </MenuProvider>
       </ImageProvider>

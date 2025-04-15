@@ -18,11 +18,19 @@ export interface Producto {
     nombre: string;
   }
   
-  export interface Pedido {
-    id: string;
-    estado: string;
-    date: any;
-    userID: string;
-    pedido: Producto[];
-  }
+// En tu archivo de interfaces (common.ts)
+export interface Pedido {
+  id: string;
+  estado: string;
+  createdAt: any;
+  mesa: string;
+  userId: string;  // O 'user' si prefieres mantenerlo como en Firebase
+  total: number;
+  paymentMethod: string;
+  readyForPayment?: boolean;
+  items: Array<{  // Cambiar de 'pedido' a 'items'
+    itemId: string;
+    quantity: number;
+  }>;
+}
   
