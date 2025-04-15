@@ -9,22 +9,32 @@ import { router } from "expo-router";
 import { collection, query, where, onSnapshot, doc, getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { useLocalSearchParams } from 'expo-router';
+import { usePedidos } from '../../context/orderContext/orderContext';
+
+
+
 
 const db = getFirestore();
+const auth = getAuth();
+const user = auth.currentUser;
+
+
+
+export type PedidoInput = Omit<Pedido, "id">;
 
 export default function MenuScreen() {
   const menuContext = useContext(MenuContext);
-  const orderContext = useContext(OrderContext);
   const [quantities, setQuantities] = useState<{ [item: string]: number }>({});
   const [modalVisible, setModalVisible] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [orderState, setOrderState] = useState<string | null>(null);
-  const [userOrders, setUserOrders] = useState<Pedido[]>([]);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [total, setTotal] = useState(0);
 
   const  {qr}  = useLocalSearchParams();
   const qrString = Array.isArray(qr) ? qr[0] : qr;
+
+
 
 
   const { createOrder } = useOrder();
@@ -44,45 +54,11 @@ export default function MenuScreen() {
     setTotal(newTotal);
   }, [quantities, menu]);
 
+  const userPedidos = usePedidos(true);
+
   useEffect(() => {
-    const auth = getAuth();
-    const uid = auth.currentUser?.uid;
-    if (!uid) return;
-
-    const q = query(collection(db, "pedidos"), where("user", "==", uid));
-   
-   
-
-    const unsub = onSnapshot(q, (snapshot) => {
-      const fetched: Pedido[] = snapshot.docs.map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          estado: data.estado,
-          createdAt: data.createdAt,
-          mesa: data.mesa,
-          userId: data.user,
-          total: data.total ?? 0, 
-          pedido: Array.isArray(data.items)
-            ? data.items.map((item) => ({
-                nombre: item.itemId,
-                cantidad: item.quantity,
-              }))
-            : [],
-        };
-      });
-      
-
-      // Ordenar por fecha descendente
-      const ordenados = fetched.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-
-      setPedidos(ordenados);
-      
-
-    });
-
-    return () => unsub();
-  }, []);
+    setPedidos(userPedidos);
+  }, [userPedidos]);
 
 
 
@@ -100,56 +76,63 @@ export default function MenuScreen() {
   
     return (
       <View style={styles.item}>
-        {imageUrl && (
-          <Image
-            source={{ uri: item.imageUrl }}
-            style={styles.photo2}
-            resizeMode="cover"
-          />
-        )}
+        {imageUrl && <Image source={{ uri: item.imageUrl }} style={styles.photo2} resizeMode="cover" />}
         <Text style={styles.itemTitle}>{item.title}</Text>
         <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
         <Text style={styles.itemDescription}>{item.description}</Text>
   
-        {/* Controles en fila */}
         <View style={styles.quantityContainer}>
-          <TouchableOpacity
-            style={styles.quantityButton}
-            onPress={() => changeQuantity(item.title, -1)}
-          >
+          <TouchableOpacity style={styles.quantityButton} onPress={() => changeQuantity(item.title, -1)}>
             <Text style={styles.quantityButtonText}>−</Text>
           </TouchableOpacity>
-  
           <Text style={styles.quantityText}>{quantities[item.title] || 0}</Text>
-  
-          <TouchableOpacity
-            style={styles.quantityButton}
-            onPress={() => changeQuantity(item.title, 1)}
-          >
+          <TouchableOpacity style={styles.quantityButton} onPress={() => changeQuantity(item.title, 1)}>
             <Text style={styles.quantityButtonText}>+</Text>
           </TouchableOpacity>
         </View>
       </View>
     );
   };
-  
+
 
   const addItem = async () => {
-    
-    const itemsArray = Object.entries(quantities).map(([itemId, quantity]) => ({
-      itemId,
-      quantity,
-    }));
+    const user = auth.currentUser;
+    if (!user) {
+      console.log("Usuario no autenticado");
+      return;
+    }
 
-  
-    
-    const id = await createOrder(itemsArray, total, qrString);
+    // Crear array de items asegurando que quantity > 0
+    const itemsArray = Object.entries(quantities)
+      .filter(([_, quantity]) => quantity > 0)
+      .map(([title, quantity]) => ({
+        itemId: title, // Usamos title como itemId para consistencia
+        quantity,
+      }));
 
+    if (itemsArray.length === 0) {
+      console.log("No hay items para ordenar");
+      return;
+    }
+
+    const pedidoInput = {
+      userId: user.uid,
+      paymentMethod: "",
+      estado: "Ordenado",
+      total: total,
+      createdAt: new Date(),
+      mesa: qrString || "Sin mesa",
+      items: itemsArray, // Usamos el mismo nombre en toda la app
+    };
+
+    const id = await createOrder(pedidoInput);
     if (id) {
       setOrderId(id);
       setQuantities({});
     }
   };
+
+
 
   // 🔁 Escuchar el estado de la orden si hay un orderId
   useEffect(() => {
@@ -224,9 +207,9 @@ export default function MenuScreen() {
                     <Text style={{ fontWeight: 'bold' }}>🧾 Pedido #{index + 1} Total a pagar: ${pedido.total?.toFixed(2) ?? '0.00'} </Text>
                     <Text>Mesa: {pedido.mesa}</Text>
                     <Text>Estado: {pedido.estado}</Text>
-                    {pedido.pedido.map((p, i) => (
+                    {pedido.items.map((p, i) => (
                       <Text key={i}>
-                        {p.nombre}: {p.cantidad}
+                        {p.itemId}: {p.quantity}
                       </Text>
                     ))}
 

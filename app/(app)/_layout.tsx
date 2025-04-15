@@ -13,10 +13,14 @@ export default function _layout() {
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="admin" options={{ headerShown: false }} />
-          <Stack.Screen name="cashier" options={{ headerShown: false }} />
+          <Stack.Screen name="cashier" options={{ headerShown: true }} />
           <Stack.Screen name="kitchen" options={{ headerShown: false}} />
           <Stack.Screen name="menu" options={{ headerShown: false}} />
           <Stack.Screen name="qr" options={{ headerShown: false}} />
+          <Stack.Screen name="cashierMainScreen" options={{ headerShown: false}} />
+          <Stack.Screen name="history" options={{ headerShown: true}} />
+
+
 
         </Stack>
         </ImageProvider>

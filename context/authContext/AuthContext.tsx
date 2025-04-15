@@ -49,7 +49,7 @@
                     if (role === "client") {
                         router.push("/(app)/qr");
                     } else if (role === "cashier") {
-                        router.push("/(app)/cashier");
+                        router.push("/(app)/cashierMainScreen");
                     } else if (role === "chef") {
                         router.push("/(app)/kitchen"); // Example route for a chef
                     } else if (role === "admin"){
@@ -83,7 +83,7 @@
                     role,
                     createdAt: new Date()
                 });
-                router.push("/(app)/menu");
+                router.push("/(app)/qr");
         
                 return firebaseUser;
             } catch (error) {

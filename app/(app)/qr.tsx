@@ -1,9 +1,9 @@
 import { styles } from '@/assets/styles/styles';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import { Button, Text, TouchableOpacity, View } from 'react-native';
-
+import { AuthContext } from '@/context/authContext/AuthContext'; // Asegúrate de que la ruta sea correcta
 
 export default function App() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -11,12 +11,14 @@ export default function App() {
   const [qr, setQr] = useState("");
   const [scanned, setScanned] = useState(false);
 
+  const auth = useContext(AuthContext);
+  const { logout } = auth ?? {};
+
   const handleQrScanned = ({ data }: { data: string }) => {
     if (!scanned) {
       setQr(data);
-      setScanned(true); 
+      setScanned(true);
       console.log("QR Scanned:", data);
-
     }
   };
 
@@ -33,8 +35,14 @@ export default function App() {
     );
   }
 
+    const handleLogout = async () => {
+      await auth?.logout();
+      router.push('../'); // Redirige al login u otra pantalla de inicio
+    };
+
   return (
     <View style={styles.containerAddMenu}>
+      <View style={styles.cameraContainer}>
       <CameraView
         style={styles.imageContainer}
         facing={facing}
@@ -43,27 +51,43 @@ export default function App() {
         }}
         onBarcodeScanned={handleQrScanned}
       />
+        </View>
 
       {qr ? (
-        <View style={{ position: 'absolute', bottom: 100 }}>
-          <Text style={{ fontSize: 18, color: 'white' }}>Your sitting in table : {qr}</Text>
-          <Button title="Scan Again" onPress={() => {
-            setQr('');
-            setScanned(false);
-          }} />
-          <Button
-            title="Go to Menu"
+            <View style={styles.qrContainer}>
+        <Text style={styles.qrText}>Your sitting in table: {qr}</Text>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setQr('');
+              setScanned(false);
+            }}
+          >
+            <Text style={styles.buttonText}>Scan Again</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.button}
             onPress={() => {
               router.push({
                 pathname: '/menu',
                 params: { qr },
               });
             }}
-          />
+          >
+            <Text style={styles.buttonText}>Go to Menu</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleLogout}
+
+          >
+            <Text style={styles.buttonText}>Logout</Text>
+          </TouchableOpacity>
         </View>
       ) : null}
-
-
     </View>
   );
 }

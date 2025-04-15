@@ -31,7 +31,7 @@ export default function MenuItem({ item }: MenuItemProps) {
 
   return (
     <View>
-      {item.image && <Image source={{ uri: item.image }} style={{ width: 100, height: 100 }} />}
+      {item.imageUrl && <Image source={{ uri: item.imageUrl }} style={{ width: 100, height: 100 }} />}
       <Text>{item.title}</Text>
       <Text>{item.price} $</Text>
       <Text>{item.description}</Text>

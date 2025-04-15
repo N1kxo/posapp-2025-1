@@ -17,7 +17,8 @@ export default function RegisterScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [role, setRole] = useState<"client" | "chef" | "cashier" | "admin">("client");
-    const [loading, setLoading] = useState(false);
+    const [loadingRegister, setLoadingRegister] = useState(false);
+    const [loadingLogin, setLoadingLogin] = useState(false);
 
     const handleRegister = async () => {
         if (!email || !password) {
@@ -25,22 +26,33 @@ export default function RegisterScreen() {
             return;
         }
 
-        setLoading(true);
+        setLoadingRegister(true);
         const user = await register(email, password, role);
+        setLoadingRegister(false);
 
+        if (user) {
+            Alert.alert("Éxito", "Usuario registrado correctamente.");
+            setEmail("");
+            setPassword("");
+        } else {
+            Alert.alert("Error", "No se pudo registrar el usuario.");
+        }
     };
+
     const handleLogin = async () => {
         if (!email || !password) {
             Alert.alert("Error", "Por favor completa todos los campos.");
             return;
         }
-    
-        setLoading(true);
-        const success = await login(email, password); // Ahora devuelve true o false
-        setLoading(false);
-    
+
+        setLoadingLogin(true);
+        const success = await login(email, password);
+        setLoadingLogin(false);
+
         if (success) {
             Alert.alert("Éxito", "Inicio de sesión exitoso.");
+            setEmail("");
+            setPassword("");
         } else {
             Alert.alert("Error", "Credenciales incorrectas o problema en la autenticación.");
         }
@@ -72,23 +84,22 @@ export default function RegisterScreen() {
             <TouchableOpacity 
                 onPress={handleRegister} 
                 style={styles.button} 
-                disabled={loading}
+                disabled={loadingRegister}
             >
                 <Text style={styles.buttonText}>
-                    {loading ? "Registrando..." : "Registrarse"}
+                    {loadingRegister ? "Registrando..." : "Registrarse"}
                 </Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
                 onPress={handleLogin} 
                 style={styles.button} 
-                disabled={loading}
+                disabled={loadingLogin}
             >
                 <Text style={styles.buttonText}>
-                    {loading ? "logeando..." : "Log In"}
+                    {loadingLogin ? "Logeando..." : "Log In"}
                 </Text>
             </TouchableOpacity>
         </View>
     );
 }
-

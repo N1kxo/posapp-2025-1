@@ -8,9 +8,9 @@ export default function RootLayout() {
       <OrderProvider> 
        <Stack>
         <Stack.Screen name="auth" options={{headerShown: false}} />
-        <Stack.Screen name="(app)" />
-        <Stack.Screen name="(menu)" />
-        <Stack.Screen name="(admin)" />
+        <Stack.Screen name="(app)"options={{headerShown: false}} />
+        <Stack.Screen name="(menu)" options={{headerShown: false}}/>
+        <Stack.Screen name="(admin)"options={{headerShown: false}} />
 
        </Stack>
       </OrderProvider>
