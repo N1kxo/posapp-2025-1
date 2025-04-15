@@ -165,7 +165,7 @@ export default function Cashier() {
       status={selectedPaymentMethod === 'efectivo' ? 'checked' : 'unchecked'}
       onPress={() => setSelectedPaymentMethod('efectivo')}
     />
-    <Entypo name="credit-card" size={24} color="#000000" style={styles.icon} />
+    <FontAwesome6 name="money-bill" size={24} color="#000000" style={styles.icon} />
     <Text style={styles.paymentText}>Efectivo</Text>
   </View>
 
@@ -175,7 +175,7 @@ export default function Cashier() {
       status={selectedPaymentMethod === 'tarjeta' ? 'checked' : 'unchecked'}
       onPress={() => setSelectedPaymentMethod('tarjeta')}
     />
-    <FontAwesome6 name="money-bill" size={24} color="#000000" style={styles.icon} />
+    <FontAwesome6 name="credit-card" size={24} color="#000000" style={styles.icon} />
     <Text style={styles.paymentText}>Tarjeta</Text>
   </View>
 
